@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Customer Care Registry"
+version = "1.0.0"
+id = "artifacts/customer-care-registry"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24421
+
+[services.development]
+run = "pnpm --filter @workspace/customer-care-registry run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/customer-care-registry", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/customer-care-registry/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24421"
+BASE_PATH = "/"

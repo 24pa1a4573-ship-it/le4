@@ -3,13 +3,25 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Customer Care Registry API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: agents
+    description: Support agent directory
+  - name: customers
+    description: Customer records
+  - name: tickets
+    description: Customer support tickets
+  - name: ticketNotes
+    description: Timeline notes/updates on a ticket
+  - name: feedback
+    description: Post-resolution customer feedback
+  - name: dashboard
+    description: Aggregate insights and analytics
 paths:
   /healthz:
     get:
@@ -24,7 +36,420 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /agents:
+    get:
+      operationId: listAgents
+      tags: [agents]
+      summary: List support agents
+      responses:
+        "200":
+          description: List of agents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Agent"
+    post:
+      operationId: createAgent
+      tags: [agents]
+      summary: Create a support agent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+
+  /agents/{id}:
+    patch:
+      operationId: updateAgent
+      tags: [agents]
+      summary: Update a support agent
+      parameters:
+        - $ref: "#/components/parameters/AgentId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteAgent
+      tags: [agents]
+      summary: Delete a support agent
+      parameters:
+        - $ref: "#/components/parameters/AgentId"
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /customers:
+    get:
+      operationId: listCustomers
+      tags: [customers]
+      summary: List customers
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+    post:
+      operationId: createCustomer
+      tags: [customers]
+      summary: Create a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+
+  /customers/{id}:
+    get:
+      operationId: getCustomer
+      tags: [customers]
+      summary: Get a customer with their ticket history
+      parameters:
+        - $ref: "#/components/parameters/CustomerId"
+      responses:
+        "200":
+          description: Customer detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerDetail"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateCustomer
+      tags: [customers]
+      summary: Update a customer
+      parameters:
+        - $ref: "#/components/parameters/CustomerId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteCustomer
+      tags: [customers]
+      summary: Delete a customer
+      parameters:
+        - $ref: "#/components/parameters/CustomerId"
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /tickets:
+    get:
+      operationId: listTickets
+      tags: [tickets]
+      summary: List tickets
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/TicketStatus"
+        - name: priority
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/TicketPriority"
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: assignedAgentId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: customerId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TicketWithCustomer"
+    post:
+      operationId: createTicket
+      tags: [tickets]
+      summary: Create a ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TicketInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketWithCustomer"
+
+  /tickets/{id}:
+    get:
+      operationId: getTicket
+      tags: [tickets]
+      summary: Get a ticket with notes and feedback
+      parameters:
+        - $ref: "#/components/parameters/TicketId"
+      responses:
+        "200":
+          description: Ticket detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketDetail"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateTicket
+      tags: [tickets]
+      summary: Update a ticket
+      parameters:
+        - $ref: "#/components/parameters/TicketId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TicketUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketWithCustomer"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteTicket
+      tags: [tickets]
+      summary: Delete a ticket
+      parameters:
+        - $ref: "#/components/parameters/TicketId"
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /tickets/{id}/notes:
+    get:
+      operationId: listTicketNotes
+      tags: [ticketNotes]
+      summary: List timeline notes for a ticket
+      parameters:
+        - $ref: "#/components/parameters/TicketId"
+      responses:
+        "200":
+          description: List of notes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TicketNote"
+    post:
+      operationId: createTicketNote
+      tags: [ticketNotes]
+      summary: Add a timeline note to a ticket
+      parameters:
+        - $ref: "#/components/parameters/TicketId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TicketNoteInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketNote"
+        "404":
+          description: Ticket not found
+
+  /feedback:
+    get:
+      operationId: listFeedback
+      tags: [feedback]
+      summary: List feedback entries
+      parameters:
+        - name: minRating
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of feedback
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackWithContext"
+    post:
+      operationId: createFeedback
+      tags: [feedback]
+      summary: Submit feedback for a resolved ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedbackInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Feedback"
+        "404":
+          description: Ticket not found
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get top-line ticket and satisfaction stats
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Get a feed of recent tickets, notes, and feedback
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Recent activity feed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  /dashboard/categories:
+    get:
+      operationId: getCategoryBreakdown
+      tags: [dashboard]
+      summary: Get ticket counts grouped by category (recurring pain points)
+      responses:
+        "200":
+          description: Category breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryCount"
+
 components:
+  parameters:
+    AgentId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    CustomerId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    TicketId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+
   schemas:
     HealthStatus:
       type: object
@@ -34,3 +459,240 @@ components:
       required:
         - status
 
+    TicketStatus:
+      type: string
+      enum: [open, in_progress, resolved, closed]
+
+    TicketPriority:
+      type: string
+      enum: [low, medium, high, urgent]
+
+    Agent:
+      type: object
+      required: [id, name, email, role, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    AgentInput:
+      type: object
+      required: [name, email, role]
+      properties:
+        name: { type: string, minLength: 1 }
+        email: { type: string, minLength: 1 }
+        role: { type: string, minLength: 1 }
+
+    AgentUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        email: { type: string, minLength: 1 }
+        role: { type: string, minLength: 1 }
+
+    Customer:
+      type: object
+      required: [id, name, email, phone, company, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: ["string", "null"] }
+        company: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+
+    CustomerInput:
+      type: object
+      required: [name, email]
+      properties:
+        name: { type: string, minLength: 1 }
+        email: { type: string, minLength: 1 }
+        phone: { type: string }
+        company: { type: string }
+
+    CustomerUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        email: { type: string, minLength: 1 }
+        phone: { type: string }
+        company: { type: string }
+
+    CustomerDetail:
+      type: object
+      required: [id, name, email, phone, company, createdAt, tickets, feedbackCount, averageRating]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: ["string", "null"] }
+        company: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+        tickets:
+          type: array
+          items:
+            $ref: "#/components/schemas/TicketWithCustomer"
+        feedbackCount: { type: integer }
+        averageRating: { type: ["number", "null"] }
+
+    TicketWithCustomer:
+      type: object
+      required: [id, customerId, customerName, subject, description, channel, status, priority, category, assignedAgentId, assignedAgentName, createdAt, updatedAt, resolvedAt]
+      properties:
+        id: { type: integer }
+        customerId: { type: integer }
+        customerName: { type: string }
+        subject: { type: string }
+        description: { type: string }
+        channel: { type: string }
+        status:
+          $ref: "#/components/schemas/TicketStatus"
+        priority:
+          $ref: "#/components/schemas/TicketPriority"
+        category: { type: string }
+        assignedAgentId: { type: ["integer", "null"] }
+        assignedAgentName: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        resolvedAt: { type: ["string", "null"], format: date-time }
+
+    TicketDetail:
+      type: object
+      required: [id, customerId, customerName, customerEmail, subject, description, channel, status, priority, category, assignedAgentId, assignedAgentName, createdAt, updatedAt, resolvedAt, notes, feedback]
+      properties:
+        id: { type: integer }
+        customerId: { type: integer }
+        customerName: { type: string }
+        customerEmail: { type: string }
+        subject: { type: string }
+        description: { type: string }
+        channel: { type: string }
+        status:
+          $ref: "#/components/schemas/TicketStatus"
+        priority:
+          $ref: "#/components/schemas/TicketPriority"
+        category: { type: string }
+        assignedAgentId: { type: ["integer", "null"] }
+        assignedAgentName: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        resolvedAt: { type: ["string", "null"], format: date-time }
+        notes:
+          type: array
+          items:
+            $ref: "#/components/schemas/TicketNote"
+        feedback:
+          type: ["object", "null"]
+          allOf:
+            - $ref: "#/components/schemas/Feedback"
+
+    TicketInput:
+      type: object
+      required: [customerId, subject, description, channel, priority, category]
+      properties:
+        customerId: { type: integer }
+        subject: { type: string, minLength: 1 }
+        description: { type: string, minLength: 1 }
+        channel: { type: string, minLength: 1 }
+        priority:
+          $ref: "#/components/schemas/TicketPriority"
+        category: { type: string, minLength: 1 }
+        assignedAgentId: { type: integer }
+
+    TicketUpdate:
+      type: object
+      properties:
+        subject: { type: string, minLength: 1 }
+        description: { type: string, minLength: 1 }
+        channel: { type: string, minLength: 1 }
+        status:
+          $ref: "#/components/schemas/TicketStatus"
+        priority:
+          $ref: "#/components/schemas/TicketPriority"
+        category: { type: string, minLength: 1 }
+        assignedAgentId: { type: ["integer", "null"] }
+
+    TicketNote:
+      type: object
+      required: [id, ticketId, author, note, createdAt]
+      properties:
+        id: { type: integer }
+        ticketId: { type: integer }
+        author: { type: string }
+        note: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    TicketNoteInput:
+      type: object
+      required: [author, note]
+      properties:
+        author: { type: string, minLength: 1 }
+        note: { type: string, minLength: 1 }
+
+    Feedback:
+      type: object
+      required: [id, ticketId, customerId, rating, comment, createdAt]
+      properties:
+        id: { type: integer }
+        ticketId: { type: integer }
+        customerId: { type: integer }
+        rating: { type: integer }
+        comment: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+
+    FeedbackWithContext:
+      type: object
+      required: [id, ticketId, ticketSubject, customerId, customerName, rating, comment, createdAt]
+      properties:
+        id: { type: integer }
+        ticketId: { type: integer }
+        ticketSubject: { type: string }
+        customerId: { type: integer }
+        customerName: { type: string }
+        rating: { type: integer }
+        comment: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+
+    FeedbackInput:
+      type: object
+      required: [ticketId, rating]
+      properties:
+        ticketId: { type: integer }
+        rating: { type: integer, minimum: 1, maximum: 5 }
+        comment: { type: string }
+
+    DashboardSummary:
+      type: object
+      required: [totalCustomers, totalTickets, openTickets, inProgressTickets, resolvedTickets, closedTickets, urgentTickets, averageRating, feedbackCount, avgResolutionHours]
+      properties:
+        totalCustomers: { type: integer }
+        totalTickets: { type: integer }
+        openTickets: { type: integer }
+        inProgressTickets: { type: integer }
+        resolvedTickets: { type: integer }
+        closedTickets: { type: integer }
+        urgentTickets: { type: integer }
+        averageRating: { type: ["number", "null"] }
+        feedbackCount: { type: integer }
+        avgResolutionHours: { type: ["number", "null"] }
+
+    ActivityItem:
+      type: object
+      required: [type, id, title, subtitle, timestamp]
+      properties:
+        type:
+          type: string
+          enum: [ticket_created, note_added, feedback_submitted, ticket_resolved]
+        id: { type: integer }
+        title: { type: string }
+        subtitle: { type: string }
+        timestamp: { type: string, format: date-time }
+
+    CategoryCount:
+      type: object
+      required: [category, count]
+      properties:
+        category: { type: string }
+        count: { type: integer }

@@ -1,6 +1,6 @@
-# [Project name]
+# Customer Care Registry
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A centralized system for support teams to log customer interactions, track issues through resolution, and analyze satisfaction trends.
 
 ## Run & Operate
 
@@ -22,15 +22,20 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- Frontend: `artifacts/customer-care-registry` (React + Vite, pages under `src/pages`)
+- API routes: `artifacts/api-server/src/routes` (agents, customers, tickets, feedback, dashboard)
+- DB schema: `lib/db/src/schema` (agents, customers, tickets, ticketNotes, feedback)
+- API contract: `lib/api-spec/openapi.yaml`
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Tickets carry a denormalized `customerName`/`assignedAgentName` in list/detail responses so the frontend never needs extra joins.
+- Ticket `resolvedAt` is set server-side the first time status transitions to `resolved` or `closed`, used to compute average resolution time.
+- Feedback is tied to a ticket + its customer (denormalized) for the global feedback log and per-customer satisfaction stats.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Support teams can log customers, open and triage tickets (status/priority/category/assignment), keep a timeline of notes per ticket, collect post-resolution feedback, and view dashboard analytics (open/urgent counts, average resolution time, satisfaction score, recurring issue categories, recent activity feed).
 
 ## User preferences
 
