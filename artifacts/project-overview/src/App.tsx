@@ -13,7 +13,8 @@ import {
   Search,
   LayoutDashboard,
   Smartphone,
-  Database
+  Database,
+  Code2
 } from 'lucide-react';
 
 const queryClient = new QueryClient();
@@ -47,10 +48,10 @@ function Synopsis() {
             </h2>
             <div className="prose prose-lg prose-slate dark:prose-invert max-w-none text-muted-foreground leading-relaxed">
               <p>
-                Customer Care Registry is a web-based application that helps organizations efficiently manage customer complaints, support requests, and feedback. The platform allows customers to register issues, track their complaint status, and communicate with support staff.
+                A Customer Care Registry is a centralized system that records and manages customer interactions, issues, and feedback. It enables businesses to streamline support processes, track inquiries, and analyze trends to enhance service quality. By maintaining a comprehensive history of customer interactions, the registry ensures consistency in responses, identifies recurring pain points, and aids in proactive issue resolution.
               </p>
               <p>
-                Administrators can assign tickets, monitor progress, generate reports, and analyze customer feedback to improve service quality. The system maintains a centralized database of customer interactions, ensuring quick issue resolution, improved customer satisfaction, and better decision-making through analytics.
+                With data-driven insights, businesses can refine training programs, optimize service protocols, and offer personalized support, ultimately improving customer satisfaction and loyalty. In a competitive landscape, a Customer Care Registry serves as a crucial tool for fostering trust, efficiency, and long-term customer relationships.
               </p>
             </div>
           </section>
@@ -151,7 +152,7 @@ function Synopsis() {
           </section>
 
           {/* Features */}
-          <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-700 fill-mode-both pb-12">
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-700 fill-mode-both">
             <h2 className="font-heading text-3xl font-semibold mb-8 flex items-center gap-3">
               <span className="text-primary"><LayoutDashboard size={28} /></span>
               Key Features
@@ -175,6 +176,38 @@ function Synopsis() {
                 </div>
               ))}
             </div>
+          </section>
+
+          {/* Skills Required */}
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-900 fill-mode-both pb-12">
+            <h2 className="font-heading text-3xl font-semibold mb-3 flex items-center gap-3">
+              <span className="text-primary"><Code2 size={28} /></span>
+              Skills Required
+            </h2>
+            <p className="text-muted-foreground mb-8 max-w-2xl">
+              This project was built as part of a SmartBridge internship using the MERN-style skill set below.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {[
+                "HTML",
+                "CSS",
+                "JavaScript",
+                "React.js",
+                "Node.js",
+                "Express.js",
+                "MongoDB",
+              ].map((skill, i) => (
+                <span
+                  key={i}
+                  className="px-4 py-2 rounded-full bg-primary/10 text-primary font-medium text-sm border border-primary/20"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+            <p className="text-sm text-muted-foreground mt-6 max-w-2xl italic">
+              Note: this build uses the Replit-managed PostgreSQL database with Drizzle ORM in place of MongoDB, since that is the data layer provisioned in this environment. It fulfills the same role as the database layer in the required skill set.
+            </p>
           </section>
 
         </main>
